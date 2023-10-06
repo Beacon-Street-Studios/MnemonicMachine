@@ -16,7 +16,5 @@ config.voiceCount = config.voices.length;
 // Order of precedence: image, color, default gray (if undefined)
 config.backgroundColor = '#FFD126';
 config.backgroundImage = 'lukas-blazek-EWDvHNNfUmQ-unsplash.jpg';
-
 config.sliderColor = '#1C274C';
-
 config.tapDelay = 150;
