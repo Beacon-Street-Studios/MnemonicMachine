@@ -32,7 +32,7 @@ function preload() {
   saveImg = loadImage('img/save.png');
 
   fasterImg = loadImage('img/faster.png');
-  slowerImg = loadImage('img/faster.png');
+  slowerImg = loadImage('img/slower.png');
 
   indicatorImg = loadImage('img/play_bar_indicator.png');
 }
