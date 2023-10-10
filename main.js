@@ -52,7 +52,8 @@ function setup() {
 
     let notes;
     if (shouldLoadURL) {
-      playbackRate = decodePlaybackRate() ?? 1.0;
+      playbackRate = decodePlaybackRate() ?? config.defaultPlaybackRate;
+      nextPlaybackRate = playbackRate;
       notes = decodeURL();
     } else {
       notes = randomNotes();
