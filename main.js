@@ -367,7 +367,7 @@ class HScrollbar {
 
     this.posMin = this.x + this.radius;
     this.posMax = this.x + this.width - this.radius;
-    this.pos = this.posMin + (this.posMax - this.posMin) * map(this.value, this.valueMin, this.valueMax, 0, 1);
+    this.pos = this.posMin + (this.posMax - this.posMin) * this.getRelative(this.value);
     
     this.over = false;
     this.locked = false;
@@ -417,6 +417,19 @@ class HScrollbar {
 
   getValue() {
     let relative = (this.pos - this.posMin) / (this.posMax - this.posMin);
-    return map(relative, 0, 1, this.valueMin, this.valueMax);
+    if (relative < 0.5) {
+      return map(relative, 0, 0.5, this.valueMin, 1.0);
+    } else {
+      return map(relative, 0.5, 1.0, 1.0, this.valueMax);
+    }
+  }
+
+  getRelative() {
+    // map(this.value, this.valueMin, this.valueMax, 0, 1);
+    if (this.value < 1.0) {
+      return map(this.value, this.valueMin, 1.0, 0, 0.5);
+    } else {
+      return map(this.value, 1.0, this.valueMax, 0.5, 1.0);
+    }
   }
 }
