@@ -23,7 +23,7 @@ let midiNumber = 0;
 let midiStart = midiNumber;
 
 let part;
-let playbackRate = 1;
+let playbackRate = config.defaultPlaybackRate;
 let nextPlaybackRate = config.defaultPlaybackRate;
 
 config.voices.forEach( (voice, index) => {
