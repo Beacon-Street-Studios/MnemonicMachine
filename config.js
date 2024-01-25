@@ -12,6 +12,11 @@ config.voices = [
     {image: 'leggo.png', file: 'bss_eggo_dingthing_leggo_', count:11}
 ];
 
+config.spritedata = {
+    spritesheet: 'test_spritesheet_200x200_128frames.png',
+    frames: [...Array(128).keys()].map(i => { return {position: {x:0, y: i*200, w: 200, h: 200}} }),
+}
+
 config.voiceCount = config.voices.length;
 
 // Order of precedence: image, color, default gray (if undefined)

@@ -13,6 +13,10 @@ let slider;
 let lastEvent;
 let tapNote;
 
+let spritesheet;
+let animation = [];
+let objects = [];
+
 function preload() {
   if (typeof config.backgroundImage !== "undefined") { 
     backgroundImg = loadImage('img/' + config.backgroundImage)
@@ -35,6 +39,7 @@ function preload() {
   slowerImg = loadImage('img/slower.png');
 
   indicatorImg = loadImage('img/play_bar_indicator.png');
+  spritesheet = loadImage('img/' + config.spritedata.spritesheet);
 }
 
 function setup() {
@@ -59,6 +64,15 @@ function setup() {
       notes = randomNotes();
     }
 
+    let frames = config.spritedata.frames;
+    for (let i = 0; i < frames.length; i++) {
+      let pos = frames[i].position;
+      let img = spritesheet.get(pos.x, pos.y, pos.w, pos.h);
+      animation.push(img);
+    }
+  
+    objects[0] = new Sprite(animation, 1);
+
     createNoteImgs(notes);
     createPart(notes);
 
@@ -77,7 +91,8 @@ function createNoteImgs(notes) {
     let left = sequenceWidth * note.time / config.duration + menuWidth + 8;
     let top = (1 - note.velocity) * sequenceHeight + 8;
     let img = imgRefs[note.voiceIndex];
-    let newNote = new Note(img,left,top,note);
+    let sprite = note.voiceIndex == 0 ? objects[0] : undefined;
+    let newNote = new Note(img,left,top,note, sprite);
     note.noteImg = newNote;
     noteImgs.push(newNote)
   });
@@ -216,19 +231,27 @@ function mouseDragged() {
 }
 
 class Note {
-  constructor(img, x, y, noteValue) {
+  constructor(img, x, y, noteValue, sprite) {
     this.x = x;
     this.y = y;
     this.img = img;
+    this.sprite = sprite;
     this.noteValue = noteValue;
     this.hover = false;
   }
 
   display() {
-    image(this.img, this.x, this.y);
+    if (this.sprite == undefined) {
+      image(this.img, this.x, this.y);
+    } else {
+      if (this.sprite.index > 0) {
+        this.sprite.animate();
+      }
+      this.sprite.show(this.x, this.y);
+    }
     if (this.hover) {
-      image(prevImg, this.x, this.y + this.img.height - prevImg.height);
-      image(nextImg, this.x + this.img.width - prevImg.width, this.y + this.img.height - prevImg.height);
+      image(prevImg, this.x, this.y + this.height() - prevImg.height);
+      image(nextImg, this.x + this.width() - prevImg.width, this.y + this.height() - prevImg.height);
       //displayTextNote.bind(this)()
     }
   }
@@ -239,7 +262,15 @@ class Note {
     let noteIndex = 'Chunk!';
     let width = textWidth(noteIndex);
     let height = 32;
-    text(noteIndex, this.x, this.y + this.img.height);
+    text(noteIndex, this.x, this.y + this.height());
+  }
+
+  animate() {
+    if (this.sprite !== undefined) {
+      this.sprite.index = 1;
+    } else {
+      this.bounce()    
+    }
   }
 
   bounce() {
@@ -258,24 +289,40 @@ class Note {
   }
 
   maxX() {
-    return this.x + this.img.width;
+    return this.x + this.width();
   }
 
   maxY() {
-    return this.y + this.img.height;
+    return this.y + this.height();
+  }
+
+  width() {
+    if (this.sprite == undefined) {
+      return this.img.width;
+    } else {
+      return this.sprite.width();
+    }
+  }
+
+  height() {
+    if (this.sprite == undefined) {
+      return this.img.height;
+    } else {
+      return this.sprite.height();
+    }
   }
 
   inPreviousHover(x, y) {
     return ( 
       between(x, this.x, this.x + prevImg.width) && 
-      between(y, this.y + this.img.height - prevImg.height, this.y + this.img.height) 
+      between(y, this.y + this.height() - prevImg.height, this.y + this.height()) 
     );
   }
 
   inNextHover(x, y) {
     return ( 
-      between(x, this.x + this.img.width - nextImg.width, this.x + this.img.width) && 
-      between(y, this.y + this.img.height - prevImg.height, this.y + this.img.height) 
+      between(x, this.x + this.width() - nextImg.width, this.x + this.width() ) && 
+      between(y, this.y + this.height() - prevImg.height, this.y + this.height() ) 
     );
   }
 
@@ -418,5 +465,31 @@ class HScrollbar {
   getValue() {
     let relative = (this.pos - this.posMin) / (this.posMax - this.posMin);
     return map(relative, 0, 1, this.valueMin, this.valueMax);
+  }
+}
+
+class Sprite {
+  constructor(animation, speed) {
+    this.animation = animation;
+    this.len = this.animation.length;
+    this.speed = speed;
+    this.index = 0;
+  }
+
+  height() {
+    return this.animation[this.index].height;
+  }
+
+  width() {
+    return this.animation[this.index].width;
+  }
+
+  show(x, y) {
+    image(this.animation[this.index], x, y);
+  }
+
+  animate() {
+    this.index += this.speed;
+    this.index %= this.len;
   }
 }
