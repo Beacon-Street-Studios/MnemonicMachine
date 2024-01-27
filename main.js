@@ -162,6 +162,7 @@ function mousePressed() {
     let notes = randomNotes(undefined, activeFilter);
     createPart(notes);
     createNoteImgs(notes);
+    forcePlay();
     return;
   }
 
@@ -226,7 +227,11 @@ function play() {
     stop();
     return;
   }
-  
+
+  forcePlay();
+}
+
+function forcePlay() {
   playbackRate = nextPlaybackRate;
   playPart();
 }
