@@ -129,7 +129,7 @@ function draw() {
   optimismButton.display();
   innovationButton.display();
 
-  playButton.selected = Tone.Transport.seconds > 0;
+  playButton.selected = Tone.Transport.seconds > 0.001;
   playButton.display();
 
   randomButton.display();
