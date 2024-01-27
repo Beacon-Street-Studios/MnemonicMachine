@@ -11,11 +11,11 @@ let toasterSamples = [
     {file: 'bss_eggo_dingthing_toaster_4.wav', tag: 'vision,future'},
     {file: 'bss_eggo_dingthing_toaster_5.wav', tag: 'innovation'},
     {file: 'bss_eggo_dingthing_toaster_6.wav', tag: 'innovation'},
-    {file: 'bss_eggo_dingthing_toaster_7.wav', tag: 'optimization'},
-    {file: 'bss_eggo_dingthing_toaster_8.wav', tag: 'optimization'},
+    {file: 'bss_eggo_dingthing_toaster_7.wav', tag: 'optimism'},
+    {file: 'bss_eggo_dingthing_toaster_8.wav', tag: 'optimism'},
     {file: 'bss_eggo_dingthing_toaster_9.wav', tag: 'innovation'},
-    {file: 'bss_eggo_dingthing_toaster_10.wav', tag: 'optimization'},
-    {file: 'bss_eggo_dingthing_toaster_11.wav', tag: 'optimization'},
+    {file: 'bss_eggo_dingthing_toaster_10.wav', tag: 'optimism'},
+    {file: 'bss_eggo_dingthing_toaster_11.wav', tag: 'optimism'},
 ];
 
 // seconds as min/max bounds, min default 0, max default config.duration

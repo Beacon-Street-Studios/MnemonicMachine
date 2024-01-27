@@ -13,6 +13,9 @@ let slider;
 let lastEvent;
 let tapNote;
 
+let activeFilter;
+let filterButtons;
+
 let spritesheet;
 let animation = [];
 let objects = [];
@@ -34,6 +37,11 @@ function preload() {
   randomImg = loadImage('img/random.png');
   helpImg = loadImage('img/help.png');
   saveImg = loadImage('img/save.png');
+
+  visionImg = loadImage('img/VISION.png');
+  futureImg = loadImage('img/FUTURE.png');
+  optimismImg = loadImage('img/OPTIMISM.png');
+  innovationImg = loadImage('img/INNOVATION.png');
 
   fasterImg = loadImage('img/faster.png');
   slowerImg = loadImage('img/slower.png');
@@ -80,6 +88,13 @@ function setup() {
     playButton = new Button(playImg, 984, 816, stopImg);
     saveButton = new Button(saveImg, 1156, 831);
 
+    visionButton = new Button(visionImg, 266, 772, undefined, 'vision');
+    futureButton = new Button(futureImg, 252, 839, undefined, 'future');
+    optimismButton = new Button(optimismImg, 212, 906, undefined, 'optimism');
+    innovationButton = new Button(innovationImg, 179, 973, undefined, 'innovation');
+    filterButtons = [visionButton, futureButton, optimismButton, innovationButton];
+    updateActiveFilter();
+
     slider = new HScrollbar(910, 1030-8, 294, 16, 16, 0.1, 4.0, playbackRate);
 
     helpButton = new Button(helpImg, 1831, 992);
@@ -108,6 +123,11 @@ function draw() {
   fill(menuColor);
 
   noStroke();
+
+  visionButton.display();
+  futureButton.display();
+  optimismButton.display();
+  innovationButton.display();
 
   playButton.selected = Tone.Transport.seconds > 0;
   playButton.display();
@@ -139,7 +159,7 @@ function mousePressed() {
   }
 
   if ( randomButton.inBounds(mouseX, mouseY) ) {
-    let notes = randomNotes();
+    let notes = randomNotes(undefined, activeFilter);
     createPart(notes);
     createNoteImgs(notes);
     return;
@@ -160,6 +180,14 @@ function mousePressed() {
     return;
   }
 
+  filterButtons.forEach( (filterButton, i) => {
+    if ( filterButton.inBounds(mouseX, mouseY) ) {
+      filterButton.toggle();
+      updateActiveFilter();
+    }
+  });
+  let filter = []
+
   for (let i = noteImgs.length - 1; i >= 0; i--) {
     if ( noteImgs[i].inPreviousHover(mouseX, mouseY) ) {
       noteImgs[i].noteValue.previousNoteIndex();
@@ -177,6 +205,15 @@ function mousePressed() {
       break;
     }
   }
+}
+
+function updateActiveFilter() {
+  activeFilter = filterButtons.reduce(function(filters, button) {
+    if (button.enabled) {
+       filters.push(button.tag);
+    }
+    return filters;
+  }, []);
 }
 
 function updatePart() {
@@ -332,12 +369,14 @@ class Note {
 }
 
 class Button {
-  constructor(img, x, y, selectedImg) {
+  constructor(img, x, y, selectedImg, tag) {
     this.x = x;
     this.y = y;
     this.img = img;
     this.selectedImg = selectedImg ?? img;
     this.selected = false;
+    this.enabled = true;
+    this.tag = tag;
   }
 
   maxX() {
@@ -352,7 +391,17 @@ class Button {
     return ( between(x, this.x, this.maxX()) && between(y, this.y, this.maxY()) );
   }
 
+  toggle() {
+    this.enabled = !this.enabled;
+  }
+
   display() {
+    if ( this.enabled == true ){
+      noTint();
+    } else {
+      tint(255, 128);
+    }
+
     let stateImage = this.selected ? this.selectedImg : this.img;
     image(stateImage, this.x, this.y);
   }

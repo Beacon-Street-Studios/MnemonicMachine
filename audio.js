@@ -36,7 +36,7 @@ config.voices.forEach( (voice, index) => {
             midiNumber++; 
         }
     } else {
-        for (var i = 1; i < voice.samples.length; i++) {
+        for (var i = 0; i < voice.samples.length; i++) {
             let key = Tone.Frequency(midiNumber, "midi").toNote()
             sampleUrls[key] = voice.samples[i].file;
             noteTags[midiNumber] = voice.samples[i].tag.split(',');
@@ -84,22 +84,34 @@ function stop() {
     Tone.Transport.stop();
 }
 
-function randomNotes(length = config.voiceCount) {
+function randomNotes(length = config.voiceCount, filter = []) {
     // return Array.from([0,1,2,3], (i) => randomNote(i));
-    return Array.from({length: length}, (_, i) => randomNote(i));
+    return Array.from({length: length}, (_, i) => randomNote(i, filter));
   }
   
-function randomNote(voiceIndex) {
+function randomNote(voiceIndex, filter=[]) {
     let min = config.voices[voiceIndex].min ?? 0.0;
     let max = config.voices[voiceIndex].max ?? (config.duration * 0.9);
 
     let time = min + Math.random() * (max - min);
     let velocity = Math.random() * 0.9 + 0.1;
     
-    let noteIndex = Math.floor(Math.random() * noteRanges[voiceIndex].length);
+    let noteIndex;
+    if (voiceIndex == 0) {
+        let notes = filteredNotes(voiceIndex, filter);
+        index = Math.floor(Math.random() * notes.length);
+        noteIndex = notes[index];
+    } else {
+        noteIndex = Math.floor(Math.random() * noteRanges[voiceIndex].length);
+    }
     let note = new NoteValue(time, velocity, voiceIndex, noteIndex);
-    // return {'time': time, 'note': notes[noteIndex], 'voiceIndex': voiceIndex, 'velocity': velocity }
     return note;
+}
+
+function filteredNotes(voiceIndex, filter) {
+    let possibleNotes = noteRanges[voiceIndex];
+    let returnFilter = possibleNotes.filter( note => noteTags[note].some(tag => filter.includes(tag)));
+    return returnFilter;
 }
 
 function randomTimeinMeasures() {
