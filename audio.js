@@ -16,8 +16,9 @@ const range = (start, stop, step=1) =>
   Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
 
 
-let sampleUrls = {}
-let noteRanges = {}
+let sampleUrls = {};
+let noteRanges = {};
+let noteTags = {};
 
 let midiNumber = 0;
 let midiStart = midiNumber;
@@ -28,11 +29,21 @@ let nextPlaybackRate = config.defaultPlaybackRate;
 
 config.voices.forEach( (voice, index) => {
     midiStart = midiNumber;
-    for (var i = 1; i <= voice.count; i++) {
-        let key = Tone.Frequency(midiNumber, "midi").toNote()
-        sampleUrls[key] = `${voice.file}${i}.wav`;
-        midiNumber++; 
+    if (voice.count != undefined) {
+        for (var i = 1; i <= voice.count; i++) {
+            let key = Tone.Frequency(midiNumber, "midi").toNote()
+            sampleUrls[key] = `${voice.file}${i}.wav`;
+            midiNumber++; 
+        }
+    } else {
+        for (var i = 1; i < voice.samples.length; i++) {
+            let key = Tone.Frequency(midiNumber, "midi").toNote()
+            sampleUrls[key] = voice.samples[i].file;
+            noteTags[midiNumber] = voice.samples[i].tag.split(',');
+            midiNumber++; 
+        }
     }
+
     noteRanges[index] = range(midiStart, midiNumber - 1);
 });
 
